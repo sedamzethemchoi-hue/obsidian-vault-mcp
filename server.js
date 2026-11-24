@@ -1,4 +1,4 @@
-import express from "express";
+zimport express from "express";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { z } from "zod";
@@ -525,7 +525,8 @@ app.get("/", (_req, res) => res.send("Obsidian vault MCP server is running."));
 app.post("/mcp", async (req, res) => {
   if (MCP_SHARED_SECRET) {
     const auth = req.headers.authorization || "";
-    if (auth !== `Bearer ${MCP_SHARED_SECRET}`) {
+const apiKey = req.headers["x-api-key"] || "";
+if (auth !== `Bearer ${MCP_SHARED_SECRET}` && apiKey !== MCP_SHARED_SECRET) {
       return res.status(401).json({ jsonrpc: "2.0", error: { code: -32001, message: "Unauthorized" }, id: null });
     }
   }

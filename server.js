@@ -521,12 +521,13 @@ const app = express();
 app.use(express.json({ limit: "5mb" }));
 
 app.get("/", (_req, res) => res.send("Obsidian vault MCP server is running."));
+app.get(["/mcp", "/mcp/:key"], (_req, res) => res.status(405).set("Allow", "POST").json({ jsonrpc: "2.0", error: { code: -32000, message: "Method not allowed" }, id: null }));
 
-app.post("/mcp", async (req, res) => {
+app.post(["/mcp", "/mcp/:key"], async (req, res) => {
   if (MCP_SHARED_SECRET) {
     const auth = req.headers.authorization || "";
 const apiKey = req.headers["x-api-key"] || "";
-if (auth !== `Bearer ${MCP_SHARED_SECRET}` && apiKey !== MCP_SHARED_SECRET) {
+if (auth !== `Bearer ${MCP_SHARED_SECRET}` && apiKey !== MCP_SHARED_SECRET && req.params.key !== MCP_SHARED_SECRET) {
       return res.status(401).json({ jsonrpc: "2.0", error: { code: -32001, message: "Unauthorized" }, id: null });
     }
   }
